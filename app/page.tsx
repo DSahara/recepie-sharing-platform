@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const CATEGORIES = [
@@ -61,38 +60,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
-      {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link
-            href="/"
-            className="text-lg font-semibold tracking-tight text-stone-900"
-          >
-            Recipe Share
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="text-sm font-medium text-stone-600 hover:text-stone-900"
-            >
-              Browse
-            </Link>
-            <Link
-              href="/signup"
-              className="text-sm font-medium text-stone-600 hover:text-stone-900"
-            >
-              Sign up
-            </Link>
-            <Link
-              href="/signin"
-              className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
-            >
-              Sign in
-            </Link>
-          </nav>
-        </div>
-      </header>
-
       {/* Supabase connection test */}
       {supabaseStatus.ok ? (
         <div className="bg-emerald-50 border-b border-emerald-200 px-4 py-2 text-center text-sm text-emerald-800">
