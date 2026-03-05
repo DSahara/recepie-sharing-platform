@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -38,7 +39,26 @@ const PLACEHOLDER_RECIPES = [
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=400&fit=crop";
 
-export default function Home() {
+async function checkSupabaseConnection(): Promise<
+  | { ok: true; recipesCount: number }
+  | { ok: false; error: string }
+> {
+  try {
+    const supabase = await createClient();
+    const { count, error } = await supabase
+      .from("recipes")
+      .select("id", { count: "exact", head: true });
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, recipesCount: count ?? 0 };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Connection failed";
+    return { ok: false, error: message };
+  }
+}
+
+export default async function Home() {
+  const supabaseStatus = await checkSupabaseConnection();
+
   return (
     <div className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
       {/* Header */}
@@ -58,7 +78,13 @@ export default function Home() {
               Browse
             </Link>
             <Link
-              href="#"
+              href="/signup"
+              className="text-sm font-medium text-stone-600 hover:text-stone-900"
+            >
+              Sign up
+            </Link>
+            <Link
+              href="/signin"
               className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
             >
               Sign in
@@ -66,6 +92,17 @@ export default function Home() {
           </nav>
         </div>
       </header>
+
+      {/* Supabase connection test */}
+      {supabaseStatus.ok ? (
+        <div className="bg-emerald-50 border-b border-emerald-200 px-4 py-2 text-center text-sm text-emerald-800">
+          Supabase: Connected · {supabaseStatus.recipesCount} recipe(s) in database
+        </div>
+      ) : (
+        <div className="bg-red-50 border-b border-red-200 px-4 py-2 text-center text-sm text-red-800">
+          Supabase: {supabaseStatus.error}
+        </div>
+      )}
 
       <main className="flex-1">
         {/* Hero */}
